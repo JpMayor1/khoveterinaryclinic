@@ -1,0 +1,181 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+/* Hide the scrollbar by default for both axes */
+::-webkit-scrollbar {
+    width: 6px; /* Adjust the width as needed for the vertical scrollbar */
+    height: 6px; /* Adjust the height as needed for the horizontal scrollbar */
+    background: transparent; /* Set the background to transparent */
+}
+
+/* Define the vertical scrollbar track style */
+::-webkit-scrollbar-track {
+    background: transparent; /* Set the background to transparent */
+}
+
+/* Define the vertical scrollbar thumb style */
+::-webkit-scrollbar-thumb {
+    background: #6499e9; /* Set the color of the thumb */
+    border-radius: 6px; /* Add rounded corners to the thumb */
+}
+
+/* Show the vertical scrollbar thumb when hovering over the container */
+.your-container-class:hover ::-webkit-scrollbar-thumb {
+    background: #555; /* Change the thumb color on hover */
+}
+
+/* Define the horizontal scrollbar track style */
+::-webkit-scrollbar-track:horizontal {
+    background: transparent; /* Set the background to transparent */
+}
+
+/* Define the horizontal scrollbar thumb style */
+::-webkit-scrollbar-thumb:horizontal {
+    background: #6499e9; /* Set the color of the thumb */
+    border-radius: 6px; /* Add rounded corners to the thumb */
+}
+
+/* Show the horizontal scrollbar thumb when hovering over the container */
+.your-container-class:hover ::-webkit-scrollbar-thumb:horizontal {
+    background: #555; /* Change the thumb color on hover */
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+
+    .print-table,
+    .print-table * {
+        visibility: visible;
+        color: #181823;
+    }
+
+    .print-table {
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: fit-content;
+    }
+
+    .print-appointment,
+    .print-appointment * {
+        visibility: visible;
+        width: 100%;
+    }
+
+    .print-appointment {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    .print-record,
+    .print-record * {
+        visibility: visible;
+        width: 100%;
+    }
+
+    .print-record {
+        position: absolute;
+        height: fit-content;
+        width: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    .print-record header {
+        width: 100%;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    .print-record .image-container {
+        height: 112px;
+        width: 112px;
+        border-radius: 100%;
+        overflow: hidden;
+    }
+
+    .print-record .text-container {
+        height: fit-content;
+        width: fit-content;
+    }
+
+    .print-record img {
+        height: 100%;
+        width: 100%;
+        border-radius: 100%;
+    }
+
+    .print-record table {
+        height: fit-content;
+        width: 100%;
+        font-size: 18px;
+    }
+
+    .print-record thead {
+        color: #181823;
+    }
+
+    .print-record .disabled {
+        display: none;
+    }
+
+    .print-invoice,
+    .print-invoice * {
+        visibility: visible;
+        width: 100%;
+    }
+
+    .print-invoice header {
+        width: 100%;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+    }
+
+    .print-invoice .image-container {
+        height: 112px;
+        width: 112px;
+        border-radius: 100%;
+        overflow: hidden;
+    }
+
+    .print-invoice .text-container {
+        height: fit-content;
+        width: fit-content;
+    }
+
+    .print-invoice img {
+        height: 100%;
+        width: 100%;
+        border-radius: 100%;
+    }
+
+    .print-invoice table {
+        height: fit-content;
+        width: 100%;
+        font-size: 18px;
+    }
+
+    .print-invoice thead {
+        color: #181823;
+    }
+
+    .print-invoice .disabled {
+        display: none;
+    }
+
+    .print-invoice .signature {
+        display: block;
+    }
+}
