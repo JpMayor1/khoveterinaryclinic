@@ -53,35 +53,6 @@ const AddNewPet = () => {
         getAllClients();
     }, []);
 
-    // const calculateAge = (birthdate: string) => {
-    //     const today = new Date();
-    //     const birthDate = new Date(birthdate);
-    //     const diffInMilliseconds = Math.abs(
-    //         today.getTime() - birthDate.getTime()
-    //     );
-    //     const years = Math.floor(
-    //         diffInMilliseconds / (1000 * 60 * 60 * 24 * 365)
-    //     );
-    //     const months =
-    //         Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24 * 30.436875)) %
-    //         12;
-    //     const days =
-    //         Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)) % 30;
-
-    //     if (years > 0) {
-    //         return `${years} Year${years > 1 ? "s" : ""} old`;
-    //     } else if (months > 0) {
-    //         return `${months} Month${months > 1 ? "s" : ""} old`;
-    //     } else {
-    //         return `${days} Day${days > 1 ? "s" : ""} old`;
-    //     }
-    // };
-
-    // const setBirthdateFunc = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setBirthdate(e.target.value);
-    //     setAge(calculateAge(e.target.value));
-    // };
-
     const convertBase64 = (file: Blob): Promise<string> => {
         return new Promise((resolve, reject) => {
             const fileReader = new FileReader();
@@ -148,7 +119,7 @@ const AddNewPet = () => {
                     species,
                     gender,
                     age,
-                    birthdate: birthdate ? new Date(birthdate) : "",
+                    birthdate,
                     color,
                 })
                 .then((res) => {
@@ -388,8 +359,9 @@ const AddNewPet = () => {
                                     <input
                                         id="birthdate"
                                         name="birthdate"
-                                        type="date"
+                                        type="text"
                                         value={birthdate}
+                                        placeholder="Ex: January 1, 2020"
                                         onChange={(e) =>
                                             setBirthdate(e.target.value)
                                         }
@@ -404,6 +376,7 @@ const AddNewPet = () => {
                                         name="age"
                                         type="text"
                                         value={age}
+                                        placeholder="Example: 2 Years old"
                                         onChange={(e) => setAge(e.target.value)}
                                         className="rounded-md p-2 border w-full"
                                     />

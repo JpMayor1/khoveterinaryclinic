@@ -6,7 +6,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import PulseLoaderComponent from "../components/PulseLoaderComponent";
 import ConfirmationModal from "../components/ConfirmationModal";
 import axios from "axios";
-import formatDate from "../utils/formatDate";
 
 const url = import.meta.env.VITE_URL;
 
@@ -97,35 +96,6 @@ const PetInfo = () => {
     const handleCloseDeleteModal = () => {
         setShowDeleteModal(false);
     };
-
-    // const calculateAge = (birthdate: string) => {
-    //     const today = new Date();
-    //     const birthDate = new Date(birthdate);
-    //     const diffInMilliseconds = Math.abs(
-    //         today.getTime() - birthDate.getTime()
-    //     );
-    //     const years = Math.floor(
-    //         diffInMilliseconds / (1000 * 60 * 60 * 24 * 365)
-    //     );
-    //     const months =
-    //         Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24 * 30.436875)) %
-    //         12;
-    //     const days =
-    //         Math.floor(diffInMilliseconds / (1000 * 60 * 60 * 24)) % 30;
-
-    //     if (years > 0) {
-    //         return `${years} Year${years > 1 ? "s" : ""} old`;
-    //     } else if (months > 0) {
-    //         return `${months} Month${months > 1 ? "s" : ""} old`;
-    //     } else {
-    //         return `${days} Day${days > 1 ? "s" : ""} old`;
-    //     }
-    // };
-
-    // const setBirthdate = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setNewBirthdate(e.target.value);
-    //     setNewAge(calculateAge(e.target.value));
-    // };
 
     const convertBase64 = (file: Blob): Promise<string> => {
         return new Promise((resolve, reject) => {
@@ -330,11 +300,7 @@ const PetInfo = () => {
                             </>
                         ) : (
                             <img
-                                src={
-                                    pet.image
-                                        ? pet.image
-                                        : "/default_dog_profile.jpg"
-                                }
+                                src={pet.image ? pet.image : "/default_paw.jpg"}
                                 alt="Pet Image"
                                 className="w-[300px] h-[300px] object-cover"
                             />
@@ -501,7 +467,12 @@ const PetInfo = () => {
                                 <input
                                     id="birthdate"
                                     name="birthdate"
-                                    type="date"
+                                    type="text"
+                                    placeholder={
+                                        pet.birthdate
+                                            ? pet.birthdate
+                                            : "Ex: January 1, 2020"
+                                    }
                                     value={newBirthdate}
                                     onChange={(e) =>
                                         setNewBirthdate(e.target.value)
@@ -511,9 +482,7 @@ const PetInfo = () => {
                             </>
                         ) : (
                             <p className="font-semibold border border-dark px-2 py-3 rounded-md">
-                                {pet.birthdate
-                                    ? formatDate(pet.birthdate)
-                                    : "not set"}
+                                {pet.birthdate ? pet.birthdate : "Not set"}
                             </p>
                         )}
                     </div>

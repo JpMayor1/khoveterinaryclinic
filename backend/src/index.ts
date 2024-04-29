@@ -60,7 +60,7 @@ app.use(appointmentRouter);
 // Cron Job
 // schedule to update daily sales
 cron.schedule(
-    "47 13 * * *",
+    "55 23 * * *",
     () => {
         dailySalesFunc();
     },
