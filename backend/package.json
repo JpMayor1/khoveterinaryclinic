@@ -23,6 +23,7 @@
         "morgan": "^1.10.0",
         "multer": "^1.4.5-lts.1",
         "node-cron": "^3.0.2",
+        "nodemailer": "^6.9.13",
         "nodemon": "^3.0.1",
         "path": "^0.12.7"
     },
@@ -34,6 +35,7 @@
         "@types/morgan": "^1.9.7",
         "@types/multer": "^1.4.11",
         "@types/node-cron": "^3.0.11",
+        "@types/nodemailer": "^6.4.15",
         "ts-node-dev": "^2.0.0",
         "typescript": "^5.2.2"
     }

@@ -3,8 +3,8 @@ import { AdminSchema } from "../models/AdminModel";
 import bcrypt from "bcrypt";
 import dotenv from "dotenv";
 import jwt from "jsonwebtoken";
-import { sendSms } from "../utils/sendSms";
 import { generateCode } from "../utils/generateCode";
+import sendEmail from "../utils/sendEmail";
 
 dotenv.config();
 
@@ -199,11 +199,12 @@ export const initiatePasswordReset = async (req: Request, res: Response) => {
         admin.set("resetPasswordCode", resetPasswordCode);
         await admin.save();
 
-        // Send the reset password code to the admin's contact number
-        await sendSms(admin.contactNumber, resetPasswordCode);
+        const message = `Your reset password code is ${resetPasswordCode}`;
+
+        await sendEmail(admin.email, "Reset Password Code", message);
 
         return res.status(200).json({
-            message: "Reset password code generated and sent via SMS",
+            message: "Reset password code generated and sent via gmail",
         });
     } catch (error) {
         console.error(error);

@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
-import { ClientSchema } from "../models/ClientModel";
-import bcrypt from "bcrypt";
 import { PetSchema } from "../models/PetModel";
+import { ClientSchema } from "../models/ClientModel";
 import { RecordSchema } from "../models/RecordModel";
 import { generateCode } from "../utils/generateCode";
-import { sendSms } from "../utils/sendSms";
+import { Request, Response } from "express";
+import sendEmail from "../utils/sendEmail";
+import bcrypt from "bcrypt";
 
 // Get All Clients
 export const getAllClients = async (req: Request, res: Response) => {
@@ -163,11 +163,12 @@ export const initiatePasswordReset = async (req: Request, res: Response) => {
         client.set("resetPasswordCode", resetPasswordCode);
         await client.save();
 
-        // Send the reset password code to the admin's contact number
-        await sendSms(client.cpNumber, resetPasswordCode);
+        const message = `Your reset password code is ${resetPasswordCode}`;
+
+        await sendEmail(client.email, "Reset Password Code", message);
 
         return res.status(200).json({
-            message: "Reset password code generated and sent via SMS",
+            message: "Reset password code generated and sent via gmail",
         });
     } catch (error) {
         console.error(error);

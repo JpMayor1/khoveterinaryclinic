@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import { AppointmentSchema } from "../models/AppointmentModel";
 import { ClientSchema } from "../models/ClientModel";
 import { PetSchema } from "../models/PetModel";
-import { RequestOptions } from "http";
-import https from "https";
-require("dotenv").config();
+import sendEmail from "../utils/sendEmail";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Get All Appointments
 export const getAllAppointments = async (req: Request, res: Response) => {
@@ -105,11 +105,11 @@ export const createAppointment = async (req: Request, res: Response) => {
                 .json({ message: "Pet does not belong to the client" });
         }
 
-        const appointment = new AppointmentSchema({
+        const newAppointment = {
             client: {
                 _id: client._id,
                 name: client.name,
-                location: client.location,
+                email: client.email,
                 cpNumber: client.cpNumber,
             },
             pet: {
@@ -124,9 +124,9 @@ export const createAppointment = async (req: Request, res: Response) => {
             date,
             time,
             purpose,
-        });
+        };
 
-        await appointment.save();
+        const appointment = await AppointmentSchema.create(newAppointment);
 
         const formattedDate = new Date(appointment.date).toLocaleDateString(
             "en-US",
@@ -137,49 +137,15 @@ export const createAppointment = async (req: Request, res: Response) => {
             }
         );
 
-        // Notify Dr. Mark
-        const message = `Hello Dr. Mark, you have a new appointment scheduled on ${formattedDate} at ${time}. Client: ${client.name}, Pet: ${pet.name}, Purpose: ${purpose}`;
+        const subject = "New Appointment";
 
-        const postData = JSON.stringify({
-            messages: [
-                {
-                    destinations: [{ to: process.env.DEFAULT_PHONE_NUMBER }],
-                    from: process.env.SENDER_NAME,
-                    text: message,
-                },
-            ],
-        });
+        const message1 = `Hello Dr. Mark, you have a new appointment scheduled on ${formattedDate} at ${time}. Client: ${client.name}, Pet: ${pet.name}, Purpose: ${purpose}`;
 
-        const options: RequestOptions = {
-            method: "POST",
-            hostname: process.env.INFOBIP_HOST_NAME,
-            path: process.env.INFOBIP_PATH,
-            headers: {
-                Authorization: `App ${process.env.INFOBIP_API_KEY}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        };
+        const message2 = `Hello ${client.name}, your appointment is scheduled on ${formattedDate} at ${time}. Pet: ${pet.name}, Purpose: ${purpose}, Please be on time.`;
 
-        const reqInfobip = https.request(options, (infobipRes) => {
-            let chunks: Uint8Array[] = [];
+        sendEmail(process.env.DEFAULT_EMAIL!, subject, message1);
 
-            infobipRes.on("data", (chunk) => {
-                chunks.push(chunk);
-            });
-
-            infobipRes.on("end", () => {
-                const body = Buffer.concat(chunks);
-                console.log(body.toString());
-            });
-
-            infobipRes.on("error", (error) => {
-                console.error(error);
-            });
-        });
-
-        reqInfobip.write(postData);
-        reqInfobip.end();
+        sendEmail(client.email, subject, message2);
 
         res.status(201).json(appointment);
     } catch (error) {
@@ -242,6 +208,21 @@ export const updateAppointment = async (req: Request, res: Response) => {
         if (!appointment) {
             return res.status(404).json({ message: "Appointment not found" });
         }
+
+        const formattedDate = new Date(appointment.date).toLocaleDateString(
+            "en-US",
+            {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+            }
+        );
+
+        const subject = "Updated Appointment Status";
+
+        const message = `Hello ${appointment.client?.name}, your appointment status is updated to ${status}. Appointment Informations: Scheduled on ${formattedDate} at ${appointment.time}. Pet: ${appointment.pet?.name}, Purpose: ${appointment.purpose}`;
+
+        sendEmail(appointment.client!.email, subject, message);
 
         res.status(200).json(appointment);
     } catch (error) {
@@ -320,49 +301,15 @@ export const updateAppointmentByClient = async (
             }
         );
 
-        // Notify Dr. Mark
-        const message = `Hello Dr. Mark, an appointment has been updated, scheduled on ${formattedDate} at ${appointment.time}. Client: ${appointment.client?.name}, Pet: ${appointment.pet?.name}, Purpose: ${appointment.purpose}`;
+        const subject = "Updated Appointment";
 
-        const postData = JSON.stringify({
-            messages: [
-                {
-                    destinations: [{ to: process.env.DEFAULT_PHONE_NUMBER }],
-                    from: process.env.SENDER_NAME,
-                    text: message,
-                },
-            ],
-        });
+        const message1 = `Hello Dr. Mark, an appointment has been updated, scheduled on ${formattedDate} at ${appointment.time}. Client: ${appointment.client?.name}, Pet: ${appointment.pet?.name}, Purpose: ${appointment.purpose}`;
 
-        const options: RequestOptions = {
-            method: "POST",
-            hostname: process.env.INFOBIP_HOST_NAME,
-            path: process.env.INFOBIP_PATH,
-            headers: {
-                Authorization: `App ${process.env.INFOBIP_API_KEY}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        };
+        const message2 = `Hello ${appointment.client?.name}, your appointment is updated on ${formattedDate} at ${appointment.time}. Pet: ${appointment.pet?.name}, Purpose: ${appointment.purpose}, Please be on time.`;
 
-        const reqInfobip = https.request(options, (infobipRes) => {
-            let chunks: Uint8Array[] = [];
+        sendEmail(process.env.DEFAULT_EMAIL!, subject, message1);
 
-            infobipRes.on("data", (chunk) => {
-                chunks.push(chunk);
-            });
-
-            infobipRes.on("end", () => {
-                const body = Buffer.concat(chunks);
-                console.log(body.toString());
-            });
-
-            infobipRes.on("error", (error) => {
-                console.error(error);
-            });
-        });
-
-        reqInfobip.write(postData);
-        reqInfobip.end();
+        sendEmail(appointment.client!.email, subject, message2);
 
         res.status(200).json(appointment);
     } catch (error) {
@@ -389,49 +336,15 @@ export const cancelAppointment = async (req: Request, res: Response) => {
             }
         );
 
-        // Notify Dr. Mark
-        const message = `Hello Dr. Mark, an appointment has been cancelled, scheduled on ${formattedDate} at ${appointment.time}. Client: ${appointment.client?.name}, Pet: ${appointment.pet?.name}, Purpose: ${appointment.purpose}`;
+        const subject = "Cancel Appointment";
 
-        const postData = JSON.stringify({
-            messages: [
-                {
-                    destinations: [{ to: process.env.DEFAULT_PHONE_NUMBER }],
-                    from: process.env.SENDER_NAME,
-                    text: message,
-                },
-            ],
-        });
+        const message1 = `Hello Dr. Mark, an appointment has been cancelled, Appointment informations: ${formattedDate} at ${appointment.time}. Client: ${appointment.client?.name}, Pet: ${appointment.pet?.name}, Purpose: ${appointment.purpose}`;
 
-        const options: RequestOptions = {
-            method: "POST",
-            hostname: process.env.INFOBIP_HOST_NAME,
-            path: process.env.INFOBIP_PATH,
-            headers: {
-                Authorization: `App ${process.env.INFOBIP_API_KEY}`,
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-        };
+        const message2 = `Hello ${appointment.client?.name}, your appointment is cancelled, Appointment informations: ${formattedDate} at ${appointment.time}. Pet: ${appointment.pet?.name}, Purpose: ${appointment.purpose}`;
 
-        const reqInfobip = https.request(options, (infobipRes) => {
-            let chunks: Uint8Array[] = [];
+        sendEmail(process.env.DEFAULT_EMAIL!, subject, message1);
 
-            infobipRes.on("data", (chunk) => {
-                chunks.push(chunk);
-            });
-
-            infobipRes.on("end", () => {
-                const body = Buffer.concat(chunks);
-                console.log(body.toString());
-            });
-
-            infobipRes.on("error", (error) => {
-                console.error(error);
-            });
-        });
-
-        reqInfobip.write(postData);
-        reqInfobip.end();
+        sendEmail(appointment.client!.email, subject, message2);
 
         res.json({ message: "Appointment Cancelled" });
     } catch (error) {
@@ -498,122 +411,30 @@ export const notifyDoctorAndClient = async () => {
         for (const appointment of appointments) {
             // Check if appointment, client, and pet are defined
             if (appointment && appointment.client && appointment.pet) {
+                const subject = "Appointment Reminder";
+
+                const formattedDate = new Date(
+                    appointment.date
+                ).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                });
+
                 // Notify the doctor
-                const doctorMessage = `Hello Dr. Mark, you have appointment scheduled on ${appointment.date.toLocaleDateString(
-                    "en-US"
-                )} at ${appointment.time}. Client: ${
-                    appointment.client.name
-                }, Pet: ${appointment.pet.name}, Purpose: ${
-                    appointment.purpose
-                }`;
+                const doctorMessage = `Hello Dr. Mark, you have appointment scheduled on ${formattedDate} at ${appointment.time}. Client: ${appointment.client.name}, Pet: ${appointment.pet.name}, Purpose: ${appointment.purpose}`;
 
-                const postData = JSON.stringify({
-                    messages: [
-                        {
-                            destinations: [
-                                { to: process.env.DEFAULT_PHONE_NUMBER },
-                            ],
-                            from: process.env.SENDER_NAME,
-                            text: doctorMessage,
-                        },
-                    ],
-                });
-
-                const options = {
-                    method: "POST",
-                    hostname: process.env.INFOBIP_HOST_NAME,
-                    path: process.env.INFOBIP_PATH,
-                    headers: {
-                        Authorization: `App ${process.env.INFOBIP_API_KEY}`,
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                    },
-                };
-
-                await new Promise<void>((resolve, reject) => {
-                    const reqInfobip = https.request(options, (infobipRes) => {
-                        let chunks: Uint8Array[] = [];
-
-                        infobipRes.on("data", (chunk) => {
-                            chunks.push(chunk);
-                        });
-
-                        infobipRes.on("end", () => {
-                            const body = Buffer.concat(chunks);
-                            console.log(body.toString());
-                            resolve(); // Resolve the promise when the request is complete
-                        });
-                    });
-
-                    reqInfobip.on("error", (error) => {
-                        console.error(error);
-                        reject(error); // Reject the promise if there's an error
-                    });
-
-                    reqInfobip.write(postData);
-                    reqInfobip.end();
-                });
+                sendEmail(process.env.DEFAULT_EMAIL!, subject, doctorMessage);
 
                 // Notify the client
-                const clientMessage = `Hello ${
-                    appointment.client.name
-                }, your appointment is scheduled on ${appointment.date.toLocaleDateString(
-                    "en-US"
-                )} at ${appointment.time}. Pet: ${
-                    appointment.pet.name
-                }, Purpose: ${appointment.purpose}, Please be on time.`;
+                const clientMessage = `Hello ${appointment.client.name}, your appointment is scheduled on ${formattedDate} at ${appointment.time}. Pet: ${appointment.pet.name}, Purpose: ${appointment.purpose}, Please be on time.`;
 
-                const clientPostData = JSON.stringify({
-                    messages: [
-                        {
-                            destinations: [{ to: appointment.client.cpNumber }],
-                            from: process.env.SENDER_NAME,
-                            text: clientMessage,
-                        },
-                    ],
-                });
+                sendEmail(appointment.client!.email, subject, clientMessage);
 
-                const clientOptions = {
-                    method: "POST",
-                    hostname: process.env.INFOBIP_HOST_NAME,
-                    path: process.env.INFOBIP_PATH,
-                    headers: {
-                        Authorization: `App ${process.env.INFOBIP_API_KEY}`,
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                    },
-                };
-
-                await new Promise<void>((resolve, reject) => {
-                    const clientReqInfobip = https.request(
-                        clientOptions,
-                        (clientInfobipRes) => {
-                            let clientChunks: Uint8Array[] = [];
-
-                            clientInfobipRes.on("data", (clientChunk) => {
-                                clientChunks.push(clientChunk);
-                            });
-
-                            clientInfobipRes.on("end", () => {
-                                const clientBody = Buffer.concat(clientChunks);
-                                console.log(clientBody.toString());
-                                resolve(); // Resolve the promise when the request is complete
-                            });
-                        }
-                    );
-
-                    clientReqInfobip.on("error", (clientError) => {
-                        console.error(clientError);
-                        reject(clientError); // Reject the promise if there's an error
-                    });
-
-                    clientReqInfobip.write(clientPostData);
-                    clientReqInfobip.end();
-                });
+                // Update the appointment's notified field to true
                 appointment.notified = true;
                 await appointment.save();
             }
-            console.log("Notified doctor and client");
         }
     } catch (error) {
         console.error("Error notifying doctor and client:", error);
