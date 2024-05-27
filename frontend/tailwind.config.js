@@ -6,7 +6,7 @@ export default {
             dark: "#181823",
             light: "#FFFBF5",
             light2: "#F5F7F8",
-            primary: "#6499E9",
+            primary: "#FF5F00",
             red: "#C70039",
             grey: "#2C3333",
             "dark-green": "#2E4F4F",
@@ -15,7 +15,7 @@ export default {
             "cyan-blue": "#A0E9FF",
         },
         fontFamily: {
-          sans: ['Poppins', 'sans-serif'],
+            sans: ["Poppins", "sans-serif"],
         },
     },
     plugins: [

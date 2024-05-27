@@ -156,7 +156,11 @@ const Products = () => {
                                                 <td className="py-2 px-4 text-center">
                                                     <Link
                                                         to={`/inventory/product/${product._id}`}
-                                                        className="text-primary hover:underline"
+                                                        className={`hover:underline ${
+                                                            product.stock < 11
+                                                                ? "text-light "
+                                                                : "text-primary"
+                                                        }`}
                                                     >
                                                         View
                                                     </Link>

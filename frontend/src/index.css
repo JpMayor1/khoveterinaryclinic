@@ -22,7 +22,7 @@
 
 /* Define the vertical scrollbar thumb style */
 ::-webkit-scrollbar-thumb {
-    background: #6499e9; /* Set the color of the thumb */
+    background: #ff5f00; /* Set the color of the thumb */
     border-radius: 6px; /* Add rounded corners to the thumb */
 }
 
@@ -38,7 +38,7 @@
 
 /* Define the horizontal scrollbar thumb style */
 ::-webkit-scrollbar-thumb:horizontal {
-    background: #6499e9; /* Set the color of the thumb */
+    background: #ff5f00; /* Set the color of the thumb */
     border-radius: 6px; /* Add rounded corners to the thumb */
 }
 

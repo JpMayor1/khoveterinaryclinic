@@ -92,7 +92,7 @@ const Register = () => {
                 <div className="w-full mb-2 mt-20">
                     <label
                         htmlFor="username"
-                        className="block text-sm font-medium leading-6 text-light"
+                        className="block text-sm font-medium leading-6 text-dark"
                     >
                         Name
                     </label>
@@ -112,7 +112,7 @@ const Register = () => {
                 <div className="w-full mb-2">
                     <label
                         htmlFor="email"
-                        className="block text-sm font-medium leading-6 text-light"
+                        className="block text-sm font-medium leading-6 text-dark"
                     >
                         Email address
                     </label>
@@ -134,7 +134,7 @@ const Register = () => {
                     <div className="flex items-center">
                         <label
                             htmlFor="password"
-                            className="block text-sm font-medium leading-6 text-light"
+                            className="block text-sm font-medium leading-6 text-dark"
                         >
                             Password
                         </label>
@@ -157,7 +157,7 @@ const Register = () => {
                     <div className="flex items-center">
                         <label
                             htmlFor="contactNumber"
-                            className="block text-sm font-medium leading-6 text-light"
+                            className="block text-sm font-medium leading-6 text-dark"
                         >
                             ContactNumber
                         </label>
@@ -179,7 +179,7 @@ const Register = () => {
                     <div className="flex items-center">
                         <label
                             htmlFor="secretKey"
-                            className="block text-sm font-medium leading-6 text-light"
+                            className="block text-sm font-medium leading-6 text-dark"
                         >
                             Secret Key
                         </label>
